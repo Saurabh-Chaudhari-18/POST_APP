@@ -8,9 +8,16 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Enable CORS with specific origin
 app.use(cors({
   origin: 'http://localhost:3000', // Adjust this to your frontend's URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
+
+// Handle preflight requests (for methods like POST, PUT, DELETE)
+app.options('*', cors());
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {

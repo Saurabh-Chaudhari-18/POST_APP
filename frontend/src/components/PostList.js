@@ -20,7 +20,9 @@ const AllPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`https://post-app-gray.vercel.app/api/message/posts`);
+        const response = await axios.get(
+          `https://post-app-gray.vercel.app/api/message/posts`
+        );
         setPosts(response.data);
       } catch (error) {
         console.error("Error fetching posts", error);
@@ -31,7 +33,9 @@ const AllPosts = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://post-app-gray.vercel.app/api/message/posts/${id}`);
+      await axios.delete(
+        `https://post-app-gray.vercel.app/api/message/posts/${id}`
+      );
       setPosts(posts.filter((post) => post._id !== id));
     } catch (error) {
       console.error("Error deleting post", error);
@@ -47,8 +51,15 @@ const AllPosts = () => {
   const handleUpdate = async (id) => {
     try {
       const updatedPost = { name: editedName, message: editedMessage };
-      await axios.put(`https://post-app-gray.vercel.app/api/message/posts/${id}`, updatedPost);
-      setPosts(posts.map((post) => (post._id === id ? { ...post, ...updatedPost } : post)));
+      await axios.put(
+        `https://post-app-gray.vercel.app/api/message/posts/${id}`,
+        updatedPost
+      );
+      setPosts(
+        posts.map((post) =>
+          post._id === id ? { ...post, ...updatedPost } : post
+        )
+      );
       setEditingPostId(null);
     } catch (error) {
       console.error("Error updating post", error);
@@ -107,7 +118,11 @@ const AllPosts = () => {
                       <img
                         src={post.imageUrl}
                         alt={post.name}
-                        style={{ width: "100%", height: "auto", marginTop: "10px" }}
+                        style={{
+                          width: "50%",
+                          height: "auto",
+                          marginTop: "10px",
+                        }}
                       />
                     )}
                     <Button

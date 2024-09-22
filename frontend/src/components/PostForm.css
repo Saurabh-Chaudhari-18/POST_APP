@@ -1,0 +1,39 @@
+    /* PostForm.css */
+.form-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    position: relative;
+  }
+  
+  .post-form-card {
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background-color: white;
+  }
+  
+  .form-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .submit-button {
+    margin-top: 20px;
+    background-color: #ff7e5f;
+    color: white;
+  }
+  
+  .submit-button:hover {
+    background-color: #ff6347;
+  }
+  
+  .error-message {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  

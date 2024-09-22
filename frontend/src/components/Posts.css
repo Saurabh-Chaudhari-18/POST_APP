@@ -1,0 +1,22 @@
+/* Posts.css */
+.posts-container {
+  padding: 20px;
+}
+
+.post-item {
+  margin-bottom: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.post-item:hover {
+  transform: translateY(-5px);
+}
+
+.edit-textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-family: 'Roboto', sans-serif;
+}

@@ -12,7 +12,7 @@ app.use(express.json());
 // Enable CORS with specific origin
 app.use(
   cors({
-    origin: "http://localhost:3000", // Adjust this to your frontend's URL
+    origin: "https://post-app-usyo.vercel.app", // Adjust this to your frontend's URL
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   })

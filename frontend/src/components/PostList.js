@@ -120,7 +120,7 @@ const AllPosts = () => {
                         alt={post.name}
                         style={{
                           width: "50%",
-                          height: "auto",
+                          height: "50%",
                           marginTop: "10px",
                         }}
                       />

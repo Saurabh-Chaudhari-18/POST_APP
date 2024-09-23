@@ -7,15 +7,22 @@ import {
   Button,
   TextField,
   TextareaAutosize,
+  Pagination,
+  IconButton,
 } from "@mui/material";
-import Navbar from "./Navbar"; // Import the Navbar
-import "./Posts.css";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Navbar from "./Navbar";
+import "./Posts.css"; // Ensure you style this properly
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedMessage, setEditedMessage] = useState("");
+  const [page, setPage] = useState(1); // Page state for pagination
+  const [likes, setLikes] = useState({});
+
+  const postsPerPage = 5; // Set posts per page limit
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -24,6 +31,10 @@ const AllPosts = () => {
           `https://post-app-gray.vercel.app/api/message/posts`
         );
         setPosts(response.data);
+        // Initialize likes for each post (assuming no likes in backend)
+        const initialLikes = {};
+        response.data.forEach((post) => (initialLikes[post._id] = 0));
+        setLikes(initialLikes);
       } catch (error) {
         console.error("Error fetching posts", error);
       }
@@ -66,15 +77,33 @@ const AllPosts = () => {
     }
   };
 
+  // Handle pagination
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  // Handle likes
+  const handleLike = (postId) => {
+    setLikes({
+      ...likes,
+      [postId]: likes[postId] + 1,
+    });
+  };
+
+  // Calculate posts to show based on page
+  const indexOfLastPost = page * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
   return (
     <div>
-      <Navbar /> {/* Include the Navbar */}
+      <Navbar />
       <div className="posts-container">
         <Typography variant="h4" gutterBottom>
           All Posts
         </Typography>
-        <ul>
-          {posts.map((post) => (
+        <ul className="posts-list">
+          {currentPosts.map((post) => (
             <Card key={post._id} className="post-item">
               <CardContent>
                 {editingPostId === post._id ? (
@@ -118,11 +147,7 @@ const AllPosts = () => {
                       <img
                         src={post.imageUrl}
                         alt={post.name}
-                        style={{
-                          width: "50%",
-                          height: "50%",
-                          marginTop: "10px",
-                        }}
+                        className="responsive-image"
                       />
                     )}
                     <Button
@@ -137,15 +162,35 @@ const AllPosts = () => {
                       variant="contained"
                       color="secondary"
                       onClick={() => handleDelete(post._id)}
+                      style={{ marginRight: "10px" }}
                     >
                       Delete
                     </Button>
+                    <IconButton
+                      aria-label="like"
+                      onClick={() => handleLike(post._id)}
+                    >
+                      <FavoriteIcon color="error" />
+                    </IconButton>
+                    <span>{likes[post._id]} Likes</span>
                   </div>
                 )}
               </CardContent>
             </Card>
           ))}
         </ul>
+        {/* Pagination component */}
+        <Pagination
+          count={Math.ceil(posts.length / postsPerPage)}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          style={{
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        />
       </div>
     </div>
   );

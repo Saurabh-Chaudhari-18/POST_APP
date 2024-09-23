@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../models/Post');
-const upload = require('../config/cloudinary');
+const upload = require('../config/cloudinary'); // Cloudinary middleware
 
 // Create a new post with image
 router.post('/create', upload.single('image'), async (req, res) => {
@@ -32,24 +32,21 @@ router.get('/posts', async (req, res) => {
 });
 
 // Update a post with optional image update
-router.put('/update/:id', upload.single('image'), async (req, res) => {
+router.put('/posts/:id', upload.single('image'), async (req, res) => {
   try {
-    // Find the post by ID
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    // Update the post fields
     post.name = req.body.name || post.name;
     post.message = req.body.message || post.message;
     
-    // Check if a new image is uploaded, if so update the imageUrl
+    // Update the image if a new one is uploaded
     if (req.file) {
-      post.imageUrl = req.file.path; // Update with new image URL
+      post.imageUrl = req.file.path; // Update image URL
     }
 
-    // Save the updated post
     await post.save();
     res.status(200).json({ message: 'Post updated successfully', post });
   } catch (error) {

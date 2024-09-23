@@ -9,7 +9,6 @@ import {
   TextareaAutosize,
   Box,
 } from "@mui/material"; // Import Box instead of Grid
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import Navbar from "./Navbar"; // Import the Navbar
 import "./Posts.css";
 
@@ -18,6 +17,7 @@ const AllPosts = () => {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedMessage, setEditedMessage] = useState("");
+  const [editedImage, setEditedImage] = useState(null); // State to store the new image
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -52,14 +52,29 @@ const AllPosts = () => {
 
   const handleUpdate = async (id) => {
     try {
-      const updatedPost = { name: editedName, message: editedMessage };
+      const formData = new FormData();
+      formData.append("name", editedName);
+      formData.append("message", editedMessage);
+      if (editedImage) {
+        formData.append("image", editedImage); // Attach the image file
+      }
+
       await axios.put(
         `https://post-app-gray.vercel.app/api/message/posts/${id}`,
-        updatedPost
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
+      // Update the post locally without reloading
       setPosts(
         posts.map((post) =>
-          post._id === id ? { ...post, ...updatedPost } : post
+          post._id === id
+            ? { ...post, name: editedName, message: editedMessage }
+            : post
         )
       );
       setEditingPostId(null);
@@ -96,6 +111,12 @@ const AllPosts = () => {
                         value={editedMessage}
                         onChange={(e) => setEditedMessage(e.target.value)}
                         className="edit-textarea"
+                      />
+                      {/* Add file input for image */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setEditedImage(e.target.files[0])}
                       />
                       <Button
                         variant="contained"
@@ -141,12 +162,6 @@ const AllPosts = () => {
                       >
                         Delete
                       </Button>
-                      <div className="likes-container">
-                        <FavoriteIcon className="like-icon" />
-                        <Typography variant="body2">
-                          {post.likes} Likes
-                        </Typography>
-                      </div>
                     </div>
                   )}
                 </CardContent>

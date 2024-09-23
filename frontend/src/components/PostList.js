@@ -48,6 +48,7 @@ const AllPosts = () => {
     setEditingPostId(post._id);
     setEditedName(post.name);
     setEditedMessage(post.message);
+    setEditedImage(null); // Reset image when editing starts
   };
 
   const handleUpdate = async (id) => {
@@ -56,7 +57,7 @@ const AllPosts = () => {
       formData.append("name", editedName);
       formData.append("message", editedMessage);
       if (editedImage) {
-        formData.append("image", editedImage); // Attach the image file
+        formData.append("image", editedImage); // Attach the image file if present
       }
 
       await axios.put(
@@ -77,9 +78,9 @@ const AllPosts = () => {
             : post
         )
       );
-      setEditingPostId(null);
+      setEditingPostId(null); // Exit edit mode after updating
     } catch (error) {
-      console.error("Error updating post", error);
+      console.error("Error updating post", error); // Log the error
     }
   };
 
@@ -92,7 +93,11 @@ const AllPosts = () => {
         </Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="space-between">
           {posts.map((post) => (
-            <Box key={post._id} width={{ xs: "100%", sm: "48%", md: "30%" }} mb={3}>
+            <Box
+              key={post._id}
+              width={{ xs: "100%", sm: "48%", md: "30%" }}
+              mb={3}
+            >
               <Card className="post-item">
                 <CardContent>
                   {editingPostId === post._id ? (

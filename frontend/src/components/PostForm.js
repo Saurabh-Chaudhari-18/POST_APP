@@ -9,8 +9,8 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import Navbar from "./Navbar"; // Import the Navbar
-import "../components/PostForm.css"; // Separate CSS file for the form styling
+import Navbar from "./Navbar";
+import "../components/PostForm.css";
 
 const PostForm = () => {
   const [error, setError] = useState("");
@@ -55,7 +55,7 @@ const PostForm = () => {
 
   return (
     <div>
-      <Navbar /> {/* Include the Navbar */}
+      <Navbar />
       <div className="form-container">
         <Card className="post-form-card">
           <CardContent>

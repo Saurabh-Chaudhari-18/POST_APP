@@ -161,12 +161,12 @@ const AllPosts = () => {
                       >
                         Delete
                       </Button>
-                      <div className="likes-container">
+                      {/* <div className="likes-container">
                         <FavoriteIcon className="like-icon" />
                         <Typography variant="body2">
                           {post.likes} Likes
                         </Typography>
-                      </div>
+                      </div> */}
                     </div>
                   )}
                 </CardContent>

@@ -8,8 +8,9 @@ import {
   TextField,
   TextareaAutosize,
   Box,
-} from "@mui/material"; // Import Box instead of Grid
-import Navbar from "./Navbar"; // Import the Navbar
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Navbar from "./Navbar";
 import "./Posts.css";
 
 const AllPosts = () => {
@@ -17,7 +18,8 @@ const AllPosts = () => {
   const [editingPostId, setEditingPostId] = useState(null);
   const [editedName, setEditedName] = useState("");
   const [editedMessage, setEditedMessage] = useState("");
-  const [editedImage, setEditedImage] = useState(null); // State to store the new image
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 3;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -32,6 +34,11 @@ const AllPosts = () => {
     };
     fetchPosts();
   }, []);
+
+  // Logic for pagination
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
   const handleDelete = async (id) => {
     try {
@@ -48,56 +55,49 @@ const AllPosts = () => {
     setEditingPostId(post._id);
     setEditedName(post.name);
     setEditedMessage(post.message);
-    setEditedImage(null); // Reset image when editing starts
   };
 
   const handleUpdate = async (id) => {
     try {
-      const formData = new FormData();
-      formData.append("name", editedName);
-      formData.append("message", editedMessage);
-      if (editedImage) {
-        formData.append("image", editedImage); // Attach the image file if present
-      }
-
+      const updatedPost = { name: editedName, message: editedMessage };
       await axios.put(
         `https://post-app-gray.vercel.app/api/message/posts/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        updatedPost
       );
-
-      // Update the post locally without reloading
       setPosts(
         posts.map((post) =>
-          post._id === id
-            ? { ...post, name: editedName, message: editedMessage }
-            : post
+          post._id === id ? { ...post, ...updatedPost } : post
         )
       );
-      setEditingPostId(null); // Exit edit mode after updating
+      setEditingPostId(null);
     } catch (error) {
-      console.error("Error updating post", error); // Log the error
+      console.error("Error updating post", error);
+    }
+  };
+
+  // Handle pagination
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(posts.length / postsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
   return (
     <div>
-      <Navbar /> {/* Include the Navbar */}
+      <Navbar />
       <div className="posts-container">
         <Typography variant="h4" gutterBottom>
           All Posts
         </Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="space-between">
-          {posts.map((post) => (
-            <Box
-              key={post._id}
-              width={{ xs: "100%", sm: "48%", md: "30%" }}
-              mb={3}
-            >
+          {currentPosts.map((post) => (
+            <Box key={post._id} width={{ xs: "100%", sm: "48%", md: "30%" }} mb={3}>
               <Card className="post-item">
                 <CardContent>
                   {editingPostId === post._id ? (
@@ -116,12 +116,6 @@ const AllPosts = () => {
                         value={editedMessage}
                         onChange={(e) => setEditedMessage(e.target.value)}
                         className="edit-textarea"
-                      />
-                      {/* Add file input for image */}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setEditedImage(e.target.files[0])}
                       />
                       <Button
                         variant="contained"
@@ -167,12 +161,38 @@ const AllPosts = () => {
                       >
                         Delete
                       </Button>
+                      <div className="likes-container">
+                        <FavoriteIcon className="like-icon" />
+                        <Typography variant="body2">
+                          {post.likes} Likes
+                        </Typography>
+                      </div>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </Box>
           ))}
+        </Box>
+        {/* Pagination Controls */}
+        <Box display="flex" justifyContent="center" mt={3}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            style={{ marginRight: "10px" }}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleNextPage}
+            disabled={currentPage === Math.ceil(posts.length / postsPerPage)}
+          >
+            Next
+          </Button>
         </Box>
       </div>
     </div>
